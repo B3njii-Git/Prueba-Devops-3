@@ -3,6 +3,8 @@ name: CI/CD Frontend (ECS)
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'front_despacho/**'
 
 jobs:
   code-quality-and-build:
