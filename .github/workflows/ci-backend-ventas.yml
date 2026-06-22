@@ -7,23 +7,6 @@ on:
 jobs:
   code-quality-and-build:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: proyecto_db
-          MYSQL_USER: admin
-          MYSQL_PASSWORD: adminpassword
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -42,12 +25,6 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Auditoría de Seguridad y Pruebas (IE5, IE6)
-        env:
-          DB_ENDPOINT: 127.0.0.1
-          DB_PORT: 3306
-          DB_NAME: proyecto_db
-          DB_USERNAME: admin
-          DB_PASSWORD: adminpassword
         run: |
           cd back-Ventas_SpringBoot/Springboot-API-REST
           echo "Ejecutando script de auditoría y pruebas..."
