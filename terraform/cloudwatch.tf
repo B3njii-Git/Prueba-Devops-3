@@ -39,12 +39,25 @@ resource "aws_cloudwatch_dashboard" "main" {
         type   = "log"
         x      = 0
         y      = 6
-        width  = 24
+        width  = 12
         height = 6
         properties = {
           query   = "SOURCE '${aws_cloudwatch_log_group.ecs_logs.name}' | fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc | limit 20"
           region  = "us-east-1"
           title   = "Application Errors (Logs)"
+          view    = "table"
+        }
+      },
+      {
+        type   = "log"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          query   = "SOURCE '${aws_cloudwatch_log_group.ecs_logs.name}' | fields @timestamp, @message | sort @timestamp desc | limit 20"
+          region  = "us-east-1"
+          title   = "Recent Application Logs (All)"
           view    = "table"
         }
       },
