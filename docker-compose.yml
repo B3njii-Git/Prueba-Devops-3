@@ -40,8 +40,44 @@ services:
     depends_on:
       - mysql-db
     environment:
-      - DB_ENDPOINT=mysql-db  # Se conecta automáticamente al contenedor de arriba
+      - DB_ENDPOINT=mysql-db
       - DB_PORT=3306
       - DB_NAME=proyecto_db
       - DB_USERNAME=admin
       - DB_PASSWORD=adminpassword
+
+  # 4. Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+
+  # 5. Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    restart: always
+
+  # 6. Loki
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+<<<<<<< HEAD
+    restart: always
+=======
+    restart: always
+>>>>>>> 85197966328f8301a7d2004be825b346f7a31692

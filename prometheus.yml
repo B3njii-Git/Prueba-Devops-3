@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "spring-boot-ventas"
+    metrics_path: "/api/ventas/actuator/prometheus"
+    static_configs:
+<<<<<<< HEAD
+      - targets: ["laboratorio-academy-alb-2026428119.us-east-1.elb.amazonaws.com"]
+=======
+      - targets: ["<ALB_DNS_NAME>"]
+>>>>>>> 85197966328f8301a7d2004be825b346f7a31692
+
+  - job_name: "spring-boot-despachos"
+    metrics_path: "/api/despachos/actuator/prometheus"
+    static_configs:
+<<<<<<< HEAD
+      - targets: ["laboratorio-academy-alb-2026428119.us-east-1.elb.amazonaws.com"]
+=======
+      - targets: ["<ALB_DNS_NAME>"]
+>>>>>>> 85197966328f8301a7d2004be825b346f7a31692
