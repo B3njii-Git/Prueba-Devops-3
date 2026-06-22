@@ -25,6 +25,12 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Auditoría de Seguridad y Pruebas (IE5, IE6)
+        env:
+          DB_ENDPOINT: localhost
+          DB_PORT: 3306
+          DB_NAME: proyecto_db
+          DB_USERNAME: admin
+          DB_PASSWORD: adminpassword
         run: |
           cd back-Ventas_SpringBoot/Springboot-API-REST
           echo "Ejecutando script de auditoría y pruebas..."
