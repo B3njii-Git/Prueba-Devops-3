@@ -1,0 +1,60 @@
+name: CI/CD Frontend (ECS)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  code-quality-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Instalación y Auditoría de Seguridad (IE5, IE6)
+        run: |
+          cd front_despacho
+          npm install
+          
+          echo "Ejecutando script de auditoría NPM..."
+          # Se ejecuta auditoría para buscar vulnerabilidades críticas. 
+          # Si encuentra vulnerabilidades de nivel 'critical', falla el paso y detiene el pipeline.
+          npm audit --audit-level=critical
+          
+          # Verificar si se dejaron variables quemadas de AWS en el código por error
+          if grep -iR "AKIA" src/; then
+            echo "ERROR CRÍTICO: Se han detectado posibles AWS Access Keys en el frontend."
+            exit 1
+          fi
+          
+          echo "Auditoría de dependencias y seguridad completada con éxito."
+
+      - name: Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          aws-region: us-east-1
+
+      - name: Login en Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build y Push a ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd front_despacho
+          docker build -t front-despachos .
+          docker tag front-despachos:latest $ECR_REGISTRY/front-despachos:latest
+          docker push $ECR_REGISTRY/front-despachos:latest
+
+      - name: Desplegar en Amazon ECS (IE2)
+        run: |
+          aws ecs update-service --cluster laboratorio-academy-cluster --service academy-app-service --force-new-deployment --region us-east-1

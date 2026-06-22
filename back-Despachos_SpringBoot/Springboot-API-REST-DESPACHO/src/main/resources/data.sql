@@ -1,0 +1,4 @@
+INSERT IGNORE INTO despacho (id_despacho, fecha_despacho, patente_camion, intento, id_compra, direccion_compra, valor_compra, despachado) VALUES (1, '2024-02-05', 'AB-CD-12', 1, 1, 'P Sherman Calle Wallabi 42 Sydney', 22990, false);
+INSERT IGNORE INTO despacho (id_despacho, fecha_despacho, patente_camion, intento, id_compra, direccion_compra, valor_compra, despachado) VALUES (2, '2024-03-08', 'XX-YY-99', 2, 2, 'Avenida siempre viva 69', 12590, true);
+INSERT IGNORE INTO despacho (id_despacho, fecha_despacho, patente_camion, intento, id_compra, direccion_compra, valor_compra, despachado) VALUES (3, '2024-04-22', 'ZZ-AA-11', 1, 3, 'Avenida Por atras 1313', 13990, false);
+INSERT IGNORE INTO despacho (id_despacho, fecha_despacho, patente_camion, intento, id_compra, direccion_compra, valor_compra, despachado) VALUES (4, '2024-04-16', 'PP-QQ-44', 3, 4, 'Calle presidente kirby 8528', 9990, false);

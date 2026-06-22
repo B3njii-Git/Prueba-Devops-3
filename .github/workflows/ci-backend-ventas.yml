@@ -1,0 +1,66 @@
+name: CI/CD Backend Ventas (ECS)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  code-quality-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Auditoría de Seguridad y Pruebas (IE5, IE6)
+        run: |
+          cd back-Ventas_SpringBoot/Springboot-API-REST
+          echo "Ejecutando script de auditoría y pruebas..."
+          
+          # Se ejecutan las pruebas unitarias. Si fallan, el pipeline se detiene automáticamente.
+          mvn clean test
+          
+          # Verificación básica de variables sensibles en código (Auditoría personalizada)
+          if grep -iR "password=" src/main/resources/; then
+            echo "ERROR CRÍTICO: Se han detectado credenciales en texto plano en el código."
+            exit 1 # Esto detiene el pipeline
+          fi
+          
+          echo "Auditoría de calidad y seguridad completada con éxito."
+
+      - name: Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          aws-region: us-east-1
+
+      - name: Login en Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build y Push a ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd back-Ventas_SpringBoot/Springboot-API-REST
+          docker build -t app-backend-ventas .
+          docker tag app-backend-ventas:latest $ECR_REGISTRY/back-ventas:latest
+          docker push $ECR_REGISTRY/back-ventas:latest
+
+      - name: Desplegar en Amazon ECS (IE2)
+        run: |
+          aws ecs update-service --cluster laboratorio-academy-cluster --service academy-app-service --force-new-deployment --region us-east-1
