@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "spring-boot-ventas"
+    metrics_path: "/api/ventas/actuator/prometheus"
+    static_configs:
+      - targets: ["<ALB_DNS_NAME>"]
+
+  - job_name: "spring-boot-despachos"
+    metrics_path: "/api/despachos/actuator/prometheus"
+    static_configs:
+      - targets: ["<ALB_DNS_NAME>"]
