@@ -163,4 +163,22 @@ resource "aws_ecs_service" "app_service" {
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.frontend.arn
+    container_name   = "front_despacho"
+    container_port   = 80
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ventas.arn
+    container_name   = "app-backend-ventas"
+    container_port   = 8081
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.despachos.arn
+    container_name   = "app-backend-despachos"
+    container_port   = 8082
+  }
 }

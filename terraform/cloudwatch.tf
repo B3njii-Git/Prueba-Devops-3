@@ -11,7 +11,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "CPUUtilization", "ClusterName", aws_ecs_cluster.main.name]
+            ["AWS/ECS", "CPUUtilization", "ServiceName", aws_ecs_service.app_service.name, "ClusterName", aws_ecs_cluster.main.name]
           ]
           period = 300
           stat   = "Average"
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", aws_ecs_cluster.main.name]
+            ["AWS/ECS", "MemoryUtilization", "ServiceName", aws_ecs_service.app_service.name, "ClusterName", aws_ecs_cluster.main.name]
           ]
           period = 300
           stat   = "Average"
@@ -39,12 +39,25 @@ resource "aws_cloudwatch_dashboard" "main" {
         type   = "log"
         x      = 0
         y      = 6
-        width  = 24
+        width  = 12
         height = 6
         properties = {
           query   = "SOURCE '${aws_cloudwatch_log_group.ecs_logs.name}' | fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc | limit 20"
           region  = "us-east-1"
           title   = "Application Errors (Logs)"
+          view    = "table"
+        }
+      },
+      {
+        type   = "log"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          query   = "SOURCE '${aws_cloudwatch_log_group.ecs_logs.name}' | fields @timestamp, @message | sort @timestamp desc | limit 20"
+          region  = "us-east-1"
+          title   = "Recent Application Logs (All)"
           view    = "table"
         }
       },
