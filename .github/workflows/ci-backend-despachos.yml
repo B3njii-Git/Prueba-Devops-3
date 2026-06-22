@@ -3,6 +3,8 @@ name: CI/CD Backend Despachos (ECS)
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'back-Despachos_SpringBoot/**'
 
 jobs:
   code-quality-and-build:
