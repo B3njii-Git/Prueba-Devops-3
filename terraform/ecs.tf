@@ -24,8 +24,8 @@ resource "aws_ecs_task_definition" "app" {
   family                   = "academy-app-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "1024" # 1 vCPU para soportar DB + 2 Spring Boot + React
-  memory                   = "3072" # 3 GB RAM
+  cpu                      = "2048" # 2 vCPU para mejor rendimiento en el inicio simultáneo
+  memory                   = "4096" # 4 GB RAM para evitar que MySQL o Java mueran por OOM (Exit code 137)
   execution_role_arn       = data.aws_iam_role.lab_role.arn
   task_role_arn            = data.aws_iam_role.lab_role.arn
 
@@ -46,6 +46,13 @@ resource "aws_ecs_task_definition" "app" {
         { name = "MYSQL_USER", value = "admin" },
         { name = "MYSQL_PASSWORD", value = "adminpassword" }
       ]
+      healthCheck = {
+        command     = ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword || exit 1"]
+        interval    = 15
+        timeout     = 5
+        retries     = 10
+        startPeriod = 60
+      }
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -59,6 +66,12 @@ resource "aws_ecs_task_definition" "app" {
       name      = "app-backend-ventas"
       image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/back-ventas:latest"
       essential = true
+      dependsOn = [
+        {
+          containerName = "mysql-db"
+          condition     = "HEALTHY"
+        }
+      ]
       portMappings = [
         {
           containerPort = 8081
@@ -86,6 +99,12 @@ resource "aws_ecs_task_definition" "app" {
       name      = "app-backend-despachos"
       image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/back-despachos:latest"
       essential = true
+      dependsOn = [
+        {
+          containerName = "mysql-db"
+          condition     = "HEALTHY"
+        }
+      ]
       portMappings = [
         {
           containerPort = 8082
