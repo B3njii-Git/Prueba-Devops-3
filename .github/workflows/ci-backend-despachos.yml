@@ -39,7 +39,8 @@ jobs:
           mvn clean test
           
           # Verificación básica de variables sensibles en código (Auditoría personalizada)
-          if grep -iR "password=" src/main/resources/; then
+          # Buscamos 'password=' seguido de cualquier cosa que NO sea un '$' (para permitir variables de entorno)
+          if grep -rE "password=[^\$]" src/main/resources/; then
             echo "ERROR CRÍTICO: Se han detectado credenciales en texto plano en el código."
             exit 1 # Esto detiene el pipeline
           fi
