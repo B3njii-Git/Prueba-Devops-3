@@ -76,4 +76,8 @@ services:
     container_name: loki
     ports:
       - "3100:3100"
+<<<<<<< HEAD
     restart: always
+=======
+    restart: always
+>>>>>>> 85197966328f8301a7d2004be825b346f7a31692
