@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringbootApiRestApplication {
 
 	public static void main(String[] args) {
+		System.out.println("Iniciando microservicio de ventas (Despliegue CI/CD exitoso)...");
 		SpringApplication.run(SpringbootApiRestApplication.class, args);
 	}
 }
