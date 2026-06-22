@@ -11,7 +11,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "CPUUtilization", "ServiceName", aws_ecs_service.app_service.name, "ClusterName", aws_ecs_cluster.main.name]
+            ["AWS/ECS", "CPUUtilization", "ServiceName", "academy-app-service", "ClusterName", aws_ecs_cluster.main.name]
           ]
           period = 300
           stat   = "Average"
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "MemoryUtilization", "ServiceName", aws_ecs_service.app_service.name, "ClusterName", aws_ecs_cluster.main.name]
+            ["AWS/ECS", "MemoryUtilization", "ServiceName", "academy-app-service", "ClusterName", aws_ecs_cluster.main.name]
           ]
           period = 300
           stat   = "Average"
