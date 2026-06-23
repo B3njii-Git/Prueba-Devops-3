@@ -59,7 +59,6 @@ public class VentaServiceTest {
     }
 
     @Test
-    rg.junit.jupiter.api.Assertions.fail("Captura IE6");
     @DisplayName("Cuando se guarda una venta, entonces se asigna un ID")
     public void whenVentaIsSavedthenIdIsAssigned(){
         // Preparar
